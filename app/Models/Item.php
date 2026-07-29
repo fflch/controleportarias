@@ -17,4 +17,9 @@ class Item extends Model
         'numero_serie',
         'observacao',
     ];
+
+    public function fotos()
+    {
+        return $this->hasMany(Foto::class);
+    }
 }
