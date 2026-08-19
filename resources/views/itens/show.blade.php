@@ -22,20 +22,20 @@
         @if($item->fotos->isNotEmpty())
         <div class="mt-4">
             <h5>Fotos</h5>
-            <div class="d-flex flex-wrap gap-2" id="galeria">
+            <div class="foto-gallery" id="galeria">
                 @foreach($item->fotos as $foto)
-                <div class="position-relative">
-                    <img src="/fotos/{{ $foto->id }}"
-                         class="img-thumbnail foto-thumb"
-                         style="height: 120px; width: 120px; object-fit: cover; cursor: pointer;"
-                         data-index="{{ $loop->index }}"
-                         data-src="/fotos/{{ $foto->id }}">
+                <div class="foto-thumb">
+                    <img src="{{ $foto->base64 }}"
+                        class="foto-thumb-img"
+                        data-index="{{ $loop->index }}"
+                        style="cursor: pointer;"
+                        alt="Foto">
                     @can('admin')
-                    <form action="/fotos/{{ $foto->id }}" method="POST" class="position-absolute top-0 end-0">
+                    <form action="/fotos/{{ $foto->id }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                                class="btn btn-danger btn-sm"
+                                class="btn btn-danger foto-thumb-remove"
                                 onclick="return confirm('Remover foto?')"
                                 title="Remover">✕</button>
                     </form>
@@ -64,20 +64,28 @@
 </div>
 
 {{-- Lightbox --}}
-<div id="lightbox" class="position-fixed top-0 start-0 w-100 h-100 d-none"
-     style="background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center;">
-    <button onclick="fecharLightbox()" class="btn btn-light position-absolute top-0 end-0 m-3">✕</button>
-    <button onclick="navLightbox(-1)" class="btn btn-light position-absolute start-0 ms-3">‹</button>
+<div id="lightbox" class="d-none"
+     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 9999;
+            display: flex; align-items: center; justify-content: center;">
+    <button onclick="fecharLightbox()" class="btn btn-light"
+            style="position: absolute; top: 0; right: 0; margin: 1rem;">✕</button>
+    <button onclick="navLightbox(-1)" class="btn btn-light"
+            style="position: absolute; left: 0; margin-left: 1rem;">‹</button>
     <img id="lightbox-img" src="" style="max-height: 85vh; max-width: 85vw; object-fit: contain;">
-    <button onclick="navLightbox(1)" class="btn btn-light position-absolute end-0 me-3">›</button>
+    <button onclick="navLightbox(1)" class="btn btn-light"
+            style="position: absolute; right: 0; margin-right: 1rem;">›</button>
 </div>
+@endsection
 
+@section('javascripts_bottom')
+  @parent
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const fotos = @json($item->fotos->map(fn($f) => '/fotos/' . $f->id)->values());
+    const fotos = @json($item->fotos->map(fn($f) => $f->base64)->values());
     let fotoAtual = 0;
 
-    document.querySelectorAll('.foto-thumb').forEach(img => {
+    document.querySelectorAll('.foto-thumb-img').forEach(img => {
         img.addEventListener('click', function() {
             fotoAtual = parseInt(this.dataset.index);
             abrirLightbox(fotoAtual);

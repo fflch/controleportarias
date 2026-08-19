@@ -32,6 +32,8 @@ class ItemRequest extends FormRequest
             'patrimonio'     => 'nullable',
             'numero_serie'   => 'nullable',
             'observacao'     => 'nullable',
+            'fotos'          => 'nullable|array|max:10',
+            'fotos.*'        => 'nullable|string|starts_with:data:image/jpeg;base64,,data:image/png;base64,|max:2800000',
         ];
     }
 
@@ -44,6 +46,9 @@ class ItemRequest extends FormRequest
             'nome.required_without' => 'O nome é obrigatório quando não há NºUSP.',
             'tipo_documento.required_without' => 'O tipo do documento é obrigatório quando não há NºUSP.',
             'documento.required_without' => 'O documento é obrigatório quando não há NºUSP.',
+            'fotos.max' => 'Você pode enviar no máximo 10 fotos por vez.',
+            'fotos.*.starts_with' => 'Uma das fotos enviadas não está em um formato válido. (formatos aceitos jpeg e png)',
+            'fotos.*.max' => 'Uma das fotos enviadas excede o tamanho máximo permitido (2MB).',
         ];
     }
 }

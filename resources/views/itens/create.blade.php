@@ -68,7 +68,7 @@
 
                 <input type="file" class="form-control mb-2" id="arquivo" accept="image/*" multiple onchange="adicionarArquivos()">
 
-                <div id="preview-fotos" class="d-flex flex-wrap gap-2 mt-2"></div>
+                <div id="preview-fotos" class="foto-gallery"></div>
                 <div id="fotos-hidden"></div>
             </div>
             <button type="submit" class="btn btn-primary">
@@ -79,7 +79,7 @@
 </div>
 <script>
 let stream = null;
-let fotosParaEnviar = [];
+let fotosParaEnviar = @json(old('fotos', []));
 
 function atualizarPreviews() {
     const container = document.getElementById('preview-fotos');
@@ -88,16 +88,14 @@ function atualizarPreviews() {
     hidden.innerHTML = '';
 
     fotosParaEnviar.forEach((src, i) => {
-        // preview
         const div = document.createElement('div');
-        div.className = 'position-relative';
+        div.className = 'foto-thumb';
         div.innerHTML = `
-            <img src="${src}" class="img-thumbnail" style="height:100px;width:100px;object-fit:cover;">
-            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+            <img src="${src}" alt="Foto">
+            <button type="button" class="btn btn-danger foto-thumb-remove"
                 onclick="removerFoto(${i})">✕</button>`;
         container.appendChild(div);
 
-        // input hidden
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'fotos[]';
@@ -156,5 +154,8 @@ function tirarFoto() {
 }
 
 window.addEventListener('beforeunload', pararWebcam);
+
+// Restaura as fotos já anexadas quando o form volta com erro de validação
+atualizarPreviews();
 </script>
 @endsection

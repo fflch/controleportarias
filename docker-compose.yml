@@ -44,7 +44,7 @@ services:
       PMA_PASSWORD: controleportarias
     networks:
       - controleportarias-network
-
+      
   selenium:
     image: selenium/standalone-chrome
     container_name: controleportarias_selenium
@@ -54,7 +54,7 @@ services:
       - controleportarias-network
     shm_size: 2gb
 
-  # No /etc/hosts do seu computador colocar a linha `127.0.0.1 auth.local`
+  # No /etc/hosts do seu computador colocar a linha `127.0.0.1 auth.local` 
   # particularidades do protocolo oAuth1 usado na USP
   senhaunica-faker:
     image: uspdev/senhaunica-faker

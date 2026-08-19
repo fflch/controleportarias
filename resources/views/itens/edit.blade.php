@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <input type="file" class="form-control mb-2" id="arquivo" accept="image/*" multiple onchange="adicionarArquivos()">
-                <div id="preview-fotos" class="d-flex flex-wrap gap-2 mt-2"></div>
+                <div id="preview-fotos" class="foto-gallery"></div>
                 <div id="fotos-hidden"></div>
             </div>
 
@@ -79,17 +79,15 @@
         @if($item->fotos->isNotEmpty())
         <div class="mt-4">
             <label class="form-label"><strong>Fotos cadastradas</strong></label>
-            <div class="d-flex flex-wrap gap-2">
+            <div class="foto-gallery">
                 @foreach($item->fotos as $foto)
-                <div class="position-relative">
-                    <img src="/fotos/{{ $foto->id }}"
-                         class="img-thumbnail"
-                         style="height: 100px; width: 100px; object-fit: cover;">
-                    <form action="/fotos/{{ $foto->id }}" method="POST" class="position-absolute top-0 end-0">
+                <div class="foto-thumb">
+                    <img src="{{ $foto->base64 }}" alt="Foto">
+                    <form action="/fotos/{{ $foto->id }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                                class="btn btn-danger btn-sm"
+                                class="btn btn-danger foto-thumb-remove"
                                 onclick="return confirm('Remover foto?')"
                                 title="Remover">✕</button>
                     </form>
@@ -104,7 +102,7 @@
 
 <script>
 let stream = null;
-let fotosParaEnviar = [];
+let fotosParaEnviar = @json(old('fotos', []));
 
 function atualizarPreviews() {
     const container = document.getElementById('preview-fotos');
@@ -114,10 +112,10 @@ function atualizarPreviews() {
 
     fotosParaEnviar.forEach((src, i) => {
         const div = document.createElement('div');
-        div.className = 'position-relative';
+        div.className = 'foto-thumb';
         div.innerHTML = `
-            <img src="${src}" class="img-thumbnail" style="height:100px;width:100px;object-fit:cover;">
-            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+            <img src="${src}" alt="Foto">
+            <button type="button" class="btn btn-danger foto-thumb-remove"
                 onclick="removerFoto(${i})">✕</button>`;
         container.appendChild(div);
 
@@ -179,5 +177,8 @@ function tirarFoto() {
 }
 
 window.addEventListener('beforeunload', pararWebcam);
+
+// Restaura as fotos já anexadas quando o form volta com erro de validação
+atualizarPreviews();
 </script>
 @endsection

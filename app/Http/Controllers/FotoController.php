@@ -10,21 +10,18 @@ use Illuminate\Support\Str;
 
 class FotoController extends Controller
 {
-    public function show(Foto $foto)
+    public function salvarFotos(array $fotoData, Item $item)
     {
-        $foto = Storage::disk('fotos')->get($foto->foto);
-        return response($foto)->header('Content-Type', 'image/jpeg');
-    }
-
-    public function store(Request $request, Item $item)
-    {
-        $fotosData = $request->input('fotos', []);
-
-        foreach ($fotosData as $fotoBase64) {
+        foreach ($fotoData as $fotoBase64) {
             if (empty($fotoBase64)) continue;
 
             if (strpos($fotoBase64, 'base64,') !== false) {
                 $fotoBase64 = base64_decode(explode('base64,', $fotoBase64)[1]);
+            }
+
+            // confirma que os bytes decodificados são realmente uma imagem válida
+            if (@getimagesizefromstring($fotoBase64) === false) {
+                continue;
             }
 
             $nomeArquivo = Str::uuid() . '.jpg';
@@ -35,13 +32,11 @@ class FotoController extends Controller
                 'foto' => $nomeArquivo,
             ]);
         }
-
-        return back()->with('alert-success', 'Fotos salvas com sucesso!');
     }
 
+    // Deleta foto individualmente 
     public function destroy(Foto $foto)
     {
-        $item = $foto->item_id;
         $foto->delete();
         return back()->with('alert-success', 'Foto removida com sucesso!');
     }

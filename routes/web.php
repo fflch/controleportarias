@@ -16,8 +16,5 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
     Route::get('/itens/{item}/edit', [ItemController::class, 'edit']);
     Route::patch('/itens/{item}', [ItemController::class, 'update']);
     Route::delete('/itens/{item}', [ItemController::class, 'destroy']);
-    //fotos
-    Route::get('/fotos/{foto}', [FotoController::class, 'show']);
-    Route::post('/itens/{item}/fotos', [FotoController::class, 'store']);
-    Route::delete('/fotos/{foto}', [FotoController::class, 'destroy']);
+    Route::delete('/fotos/{foto}', [FotoController::class, 'destroy']); // (views:edit e show)
 });
